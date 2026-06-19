@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roue à Pets — Giveaway Adopt Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#1b1736;
+    --night-2:#241f4a;
+    --lavender:#b9a6ff;
+    --bubblegum:#ff8fc7;
+    --mint:#7be8c7;
+    --cream:#fff4d6;
+    --sun:#ffd166;
+    --ink:#241f4a;
+    --paper:#fffaf0;
+    --line:rgba(36,31,74,0.12);
+    --shadow-hard: 6px 6px 0 rgba(36,31,74,0.9);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Nunito',sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.06), transparent 40%),
+      radial-gradient(circle at 85% 0%, rgba(255,255,255,0.05), transparent 35%),
+      linear-gradient(180deg, var(--night) 0%, var(--night-2) 100%);
+    min-height:100vh;
+  }
+  /* stars */
+  .stars{
+    position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .stars span{
+    position:absolute; width:3px; height:3px; background:#fff; border-radius:50%;
+    opacity:.55; animation:twinkle 3.5s ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15} 50%{opacity:.8}}
+  @media (prefers-reduced-motion: reduce){
+    .stars span{animation:none; opacity:.4;}
+  }
+
+  header{
+    position:relative; z-index:1;
+    text-align:center;
+    padding:56px 20px 28px;
+  }
+  .eyebrow{
+    font-family:'Baloo 2',sans-serif;
+    display:inline-block;
+    background:var(--mint);
+    color:var(--ink);
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.04em;
+    padding:6px 16px;
+    border-radius:999px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+    transform:rotate(-2deg);
+  }
+  h1{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:800;
+    font-size:clamp(34px, 6vw, 58px);
+    color:#fff;
+    margin:18px 0 8px;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.35);
+  }
+  h1 .accent{color:var(--bubblegum);}
+  header p.sub{
+    color:#cfc9f0;
+    font-size:17px;
+    max-width:560px;
+    margin:0 auto;
+    line-height:1.5;
+  }
+
+  main{position:relative; z-index:1; max-width:980px; margin:0 auto; padding:0 20px 80px;}
+
+  .panel{
+    background:var(--paper);
+    border-radius:var(--radius);
+    border:3px solid var(--ink);
+    box-shadow:var(--shadow-hard);
+    padding:32px;
+    margin-bottom:36px;
+  }
+
+  /* countdown */
+  .countdown-panel{
+    text-align:center;
+    background:linear-gradient(135deg, var(--lavender), var(--bubblegum));
+    color:#fff;
+  }
+  .countdown-panel h2{
+    font-family:'Baloo 2',sans-serif;
+    font-size:22px;
+    margin:0 0 14px;
+    text-shadow:2px 2px 0 rgba(0,0,0,0.2);
+  }
+  .timer{
+    display:flex; justify-content:center; gap:14px; flex-wrap:wrap;
+  }
+  .timer .unit{
+    background:rgba(255,255,255,0.18);
+    border:2px solid rgba(255,255,255,0.6);
+    border-radius:14px;
+    padding:14px 18px;
+    min-width:84px;
+  }
+  .timer .num{
+    font-family:'Baloo 2',sans-serif;
+    font-size:32px;
+    font-weight:800;
+    display:block;
+    line-height:1;
+  }
+  .timer .label{font-size:12px; letter-spacing:.06em; opacity:.9;}
+  .timer-note{margin-top:14px; font-size:13px; opacity:.95;}
+
+  /* wheel section */
+  .wheel-section{
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:32px;
+    align-items:start;
+  }
+  @media (max-width:760px){
+    .wheel-section{grid-template-columns:1fr;}
+  }
+  .wheel-wrap{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .wheel-pointer{
+    width:0; height:0;
+    border-left:14px solid transparent;
+    border-right:14px solid transparent;
+    border-top:24px solid var(--ink);
+    margin-bottom:-2px;
+    z-index:2;
+    filter:drop-shadow(2px 2px 0 rgba(0,0,0,0.3));
+  }
+  #wheelCanvas{
+    border-radius:50%;
+    border:5px solid var(--ink);
+    box-shadow:var(--shadow-hard);
+    background:#fff;
+    max-width:100%;
+  }
+  .spin-btn{
+    margin-top:22px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:18px;
+    background:var(--sun);
+    color:var(--ink);
+    border:3px solid var(--ink);
+    border-radius:14px;
+    padding:14px 34px;
+    cursor:pointer;
+    box-shadow:4px 4px 0 var(--ink);
+    transition:transform .12s ease;
+  }
+  .spin-btn:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink);}
+  .spin-btn:active{transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink);}
+  .spin-btn:disabled{opacity:.5; cursor:not-allowed; box-shadow:4px 4px 0 var(--ink); transform:none;}
+
+  .result-banner{
+    margin-top:18px;
+    font-family:'Baloo 2',sans-serif;
+    font-size:18px;
+    text-align:center;
+    min-height:28px;
+  }
+
+  /* entry form */
+  .entry-box h3{
+    font-family:'Baloo 2',sans-serif;
+    font-size:20px;
+    margin-top:0;
+  }
+  .entry-box label{
+    display:block;
+    font-weight:700;
+    font-size:13px;
+    margin:14px 0 6px;
+  }
+  .entry-box input{
+    width:100%;
+    padding:11px 12px;
+    border:2px solid var(--ink);
+    border-radius:10px;
+    font-family:'Nunito',sans-serif;
+    font-size:15px;
+  }
+  .entry-box small{display:block; color:#6a6488; margin-top:6px; line-height:1.4;}
+  .join-btn{
+    margin-top:16px;
+    width:100%;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    background:var(--mint);
+    border:3px solid var(--ink);
+    border-radius:12px;
+    padding:12px;
+    cursor:pointer;
+    box-shadow:3px 3px 0 var(--ink);
+  }
+  .join-btn:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--ink);}
+  .join-btn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--ink);}
+
+  .participants{
+    margin-top:20px;
+    border-top:2px dashed var(--line);
+    padding-top:14px;
+  }
+  .participants h4{
+    font-family:'Baloo 2',sans-serif;
+    font-size:14px;
+    margin:0 0 8px;
+    color:#6a6488;
+  }
+  .chip-list{display:flex; flex-wrap:wrap; gap:6px; max-height:140px; overflow-y:auto;}
+  .chip{
+    background:var(--cream);
+    border:1.5px solid var(--ink);
+    border-radius:999px;
+    padding:4px 10px;
+    font-size:13px;
+    font-weight:700;
+  }
+
+  /* how it works */
+  .how-it-works ul{padding-left:20px; line-height:1.8; margin:0;}
+  .how-it-works h2, .winners h2{
+    font-family:'Baloo 2',sans-serif;
+    font-size:22px;
+    margin-top:0;
+  }
+  .disclaimer{
+    background:var(--night-2);
+    color:#cfc9f0;
+    border:none;
+    box-shadow:none;
+    font-size:14px;
+    line-height:1.6;
+  }
+  .disclaimer strong{color:#fff;}
+
+  .winners-list{list-style:none; margin:0; padding:0;}
+  .winners-list li{
+    display:flex; justify-content:space-between; gap:10px;
+    padding:10px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:15px;
+  }
+  .winners-list li:last-child{border-bottom:none;}
+  .status-pill{
+    font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px;
+    text-transform:uppercase; letter-spacing:.03em;
+  }
+  .status-pending{background:#ffe8a3; color:#7a5b00;}
+  .status-done{background:#bff2da; color:#0d5f3f;}
+
+  /* admin */
+  .admin-toggle{
+    position:fixed; bottom:18px; right:18px; z-index:5;
+    background:var(--night-2);
+    color:#fff;
+    border:2px solid #fff3;
+    border-radius:999px;
+    padding:10px 16px;
+    font-family:'Baloo 2',sans-serif;
+    font-size:13px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,0.4);
+  }
+  .admin-panel{
+    display:none;
+    margin-top:36px;
+  }
+  .admin-panel.open{display:block;}
+  .admin-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  @media (max-width:760px){.admin-grid{grid-template-columns:1fr;}}
+  .admin-grid h3{font-family:'Baloo 2',sans-serif; font-size:17px; margin-top:0;}
+  .pet-row{
+    display:flex; gap:8px; align-items:center; margin-bottom:8px;
+  }
+  .pet-row input[type="text"]{flex:1; padding:8px 10px; border:2px solid var(--ink); border-radius:8px;}
+  .pet-row input[type="color"]{width:40px; height:38px; border:2px solid var(--ink); border-radius:8px; padding:0;}
+  .pet-row button{
+    background:#ffb3b3; border:2px solid var(--ink); border-radius:8px;
+    width:34px; height:34px; cursor:pointer; font-weight:800;
+  }
+  .admin-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+  .admin-actions button, .admin-actions input[type="number"]{
+    font-family:'Nunito',sans-serif; font-weight:700;
+    padding:9px 14px; border:2px solid var(--ink); border-radius:10px;
+    cursor:pointer; background:#fff;
+  }
+  .admin-actions input[type="number"]{width:80px; cursor:text;}
+  .primary-action{background:var(--sun);}
+  .danger-action{background:#ffb3b3;}
+
+  footer{
+    text-align:center; color:#8d87b0; font-size:13px; padding:20px; position:relative; z-index:1;
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<header>
+  <span class="eyebrow">GIVEAWAY COMMUNAUTAIRE — PAS UN BOT, PAS UN LOGIN</span>
+  <h1>La Roue à <span class="accent">Pets</span></h1>
+  <p class="sub">Tape ton pseudo Roblox, attends le tirage, et si tu gagnes je te rejoins en jeu pour l'échange. Aucun mot de passe n'est jamais demandé ici.</p>
+</header>
+
+<main>
+
+  <section class="panel countdown-panel">
+    <h2>⏳ Prochain tirage dans</h2>
+    <div class="timer" id="timer">
+      <div class="unit"><span class="num" id="t-hours">12</span><span class="label">HEURES</span></div>
+      <div class="unit"><span class="num" id="t-min">00</span><span class="label">MIN</span></div>
+      <div class="unit"><span class="num" id="t-sec">00</span><span class="label">SEC</span></div>
+    </div>
+    <p class="timer-note">Le tirage est lancé manuellement par l'organisateur — ce compteur est indicatif.</p>
+  </section>
+
+  <section class="panel wheel-section">
+    <div class="wheel-wrap">
+      <div class="wheel-pointer"></div>
+      <canvas id="wheelCanvas" width="420" height="420"></canvas>
+      <button class="spin-btn" id="spinBtn">🎡 Tourner la roue</button>
+      <div class="result-banner" id="resultBanner"></div>
+    </div>
+
+    <div class="entry-box">
+      <h3>🐾 Rejoindre le tirage</h3>
+      <label for="pseudoInput">Ton pseudo Roblox (exact, casse comprise)</label>
+      <input type="text" id="pseudoInput" placeholder="ex: Builderman123" maxlength="30">
+      <small>Ce pseudo sert uniquement à ce que l'organisateur t'envoie une demande d'ami en jeu pour l'échange. Rien d'autre n'est demandé — jamais de mot de passe.</small>
+      <button class="join-btn" id="joinBtn">Ajouter mon pseudo à la roue</button>
+
+      <div class="participants">
+        <h4>Participants actuels (<span id="partCount">0</span>)</h4>
+        <div class="chip-list" id="chipList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel how-it-works">
+    <h2>📋 Comment ça marche</h2>
+    <ul>
+      <li>Tu entres ton pseudo Roblox exact. C'est tout — aucune connexion à ton compte n'est requise.</li>
+      <li>Quand le timer arrive à zéro, l'organisateur tourne la roue en direct.</li>
+      <li>Le pseudo tiré est ajouté à la liste "Gagnants" ci-dessous, avec le pet correspondant.</li>
+      <li>L'organisateur t'envoie une demande d'ami <strong>dans Roblox</strong> et organise l'échange directement dans Adopt Me.</li>
+      <li>Si quelqu'un te contacte ailleurs en demandant ton mot de passe ou un lien de connexion "Roblox", ce n'est pas l'organisateur — c'est une arnaque, ignore et signale.</li>
+    </ul>
+  </section>
+
+  <section class="panel winners">
+    <h2>🏆 Derniers gagnants</h2>
+    <ul class="winners-list" id="winnersList">
+      <li style="color:#8d87b0; font-style:italic;">Aucun tirage effectué pour l'instant.</li>
+    </ul>
+  </section>
+
+  <section class="panel disclaimer">
+    <strong>À lire avant de jouer :</strong> ce site est un outil de tirage au sort géré manuellement par un joueur, sans lien officiel avec Roblox Corporation ou Adopt Me. Personne ne te demandera jamais ton mot de passe, ton code 2FA, ou de te connecter via un lien externe. Les échanges se passent uniquement à l'intérieur du jeu Roblox, entre comptes amis.
+  </section>
+
+  <section class="panel admin-panel" id="adminPanel">
+    <h2 style="font-family:'Baloo 2',sans-serif;">🛠️ Panneau organisateur</h2>
+    <div class="admin-grid">
+      <div>
+        <h3>Liste des pets sur la roue</h3>
+        <div id="petEditor"></div>
+        <button class="join-btn" id="addPetBtn" style="background:var(--cream);">+ Ajouter un pet</button>
+      </div>
+      <div>
+        <h3>Réglages du tirage</h3>
+        <label style="font-weight:700; font-size:13px;">Durée du compte à rebours (heures)</label><br>
+        <input type="number" id="hoursInput" min="0" max="999" value="12" style="margin:8px 0 14px; padding:8px; border:2px solid var(--ink); border-radius:8px; width:100px;">
+        <div class="admin-actions">
+          <button class="primary-action" id="resetTimerBtn">🔄 Relancer le compteur</button>
+          <button id="clearEntriesBtn">🧹 Vider les participants</button>
+          <button class="danger-action" id="clearWinnersBtn">🗑️ Effacer l'historique</button>
+        </div>
+        <h3 style="margin-top:24px;">Marquer un échange comme livré</h3>
+        <div id="pendingList" style="font-size:14px; line-height:1.8;"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<button class="admin-toggle" id="adminToggle">⚙️ Mode organisateur</button>
+
+<footer>Outil communautaire non-officiel pour Adopt Me — aucune affiliation avec Roblox Corporation.</footer>
+
+<script>
+/* ---------- Storage helpers (all local, no server, no passwords) ---------- */
+const LS = {
+  get(key, fallback){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } },
+  set(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+};
+
+const DEFAULT_PETS = [
+  { name: "Dragon des ombres", color: "#6a4fb3" },
+  { name: "Licorne dorée", color: "#ffd166" },
+  { name: "Chat de Noël", color: "#ff8fc7" },
+  { name: "Phénix de glace", color: "#7be8c7" },
+  { name: "Griffon royal", color: "#b9a6ff" },
+  { name: "Renard arc-en-ciel", color: "#ffb38a" }
+];
+
+let pets = LS.get('wheel_pets', DEFAULT_PETS);
+let participants = LS.get('wheel_participants', []);
+let winners = LS.get('wheel_winners', []);
+let deadline = LS.get('wheel_deadline', null);
+
+if(!deadline){
+  deadline = Date.now() + 12*3600*1000;
+  LS.set('wheel_deadline', deadline);
+}
+
+/* ---------- Stars background ---------- */
+const starsEl = document.getElementById('stars');
+for(let i=0;i<60;i++){
+  const s = document.createElement('span');
+  s.style.left = Math.random()*100+'%';
+  s.style.top = Math.random()*100+'%';
+  s.style.animationDelay = (Math.random()*3.5)+'s';
+  starsEl.appendChild(s);
+}
+
+/* ---------- Countdown ---------- */
+function tick(){
+  const remaining = Math.max(0, deadline - Date.now());
+  const h = Math.floor(remaining/3600000);
+  const m = Math.floor((remaining%3600000)/60000);
+  const s = Math.floor((remaining%60000)/1000);
+  document.getElementById('t-hours').textContent = String(h).padStart(2,'0');
+  document.getElementById('t-min').textContent = String(m).padStart(2,'0');
+  document.getElementById('t-sec').textContent = String(s).padStart(2,'0');
+}
+setInterval(tick, 1000);
+tick();
+
+/* ---------- Wheel drawing ---------- */
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
+let currentRotation = 0;
+
+function drawWheel(){
+  const cx = canvas.width/2, cy = canvas.height/2, r = canvas.width/2 - 8;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const n = Math.max(pets.length,1);
+  const arc = (Math.PI*2)/n;
+
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(currentRotation);
+
+  pets.forEach((pet, i) => {
+    const start = i*arc;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,r,start,start+arc);
+    ctx.closePath();
+    ctx.fillStyle = pet.color || '#ccc';
+    ctx.fill();
+    ctx.strokeStyle = '#241f4a';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.rotate(start + arc/2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#241f4a';
+    ctx.font = '700 14px Baloo 2, sans-serif';
+    ctx.fillText(pet.name, r-14, 5);
+    ctx.restore();
+  });
+
+  ctx.restore();
+
+  // center hub
+  ctx.beginPath();
+  ctx.arc(cx,cy,28,0,Math.PI*2);
+  ctx.fillStyle = '#fffaf0';
+  ctx.strokeStyle = '#241f4a';
+  ctx.lineWidth = 4;
+  ctx.fill();
+  ctx.stroke();
+}
+drawWheel();
+
+let spinning = false;
+document.getElementById('spinBtn').addEventListener('click', () => {
+  if(spinning || pets.length === 0) return;
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('resultBanner').textContent = '';
+
+  const n = pets.length;
+  const arc = (Math.PI*2)/n;
+  const winnerIndex = Math.floor(Math.random()*n);
+  const extraSpins = 6 + Math.random()*2;
+  const targetAngle = (Math.PI*2*extraSpins) + (Math.PI*2 - (winnerIndex*arc + arc/2)) ;
+
+  const duration = 4200;
+  const start = performance.now();
+  const startRot = currentRotation;
+
+  function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
+
+  function animate(now){
+    const elapsed = now - start;
+    const t = Math.min(1, elapsed/duration);
+    currentRotation = startRot + targetAngle * easeOutCubic(t);
+    drawWheel();
+    if(t < 1){
+      requestAnimationFrame(animate);
+    } else {
+      spinning = false;
+      document.getElementById('spinBtn').disabled = false;
+      const won = pets[winnerIndex];
+      announceWinner(won);
+    }
+  }
+  requestAnimationFrame(animate);
+});
+
+function announceWinner(pet){
+  document.getElementById('resultBanner').textContent = `🎉 ${pet.name} a été tiré au sort !`;
+  // pick a random participant who hasn't won recently if available
+  let chosenPseudo = null;
+  if(participants.length){
+    chosenPseudo = participants[Math.floor(Math.random()*participants.length)];
+  }
+  if(chosenPseudo){
+    winners.unshift({ pseudo: chosenPseudo, pet: pet.name, date: new Date().toLocaleString('fr-FR'), delivered: false });
+    LS.set('wheel_winners', winners);
+    renderWinners();
+    renderPending();
+  }
+}
+
+/* ---------- Participants ---------- */
+function renderChips(){
+  const list = document.getElementById('chipList');
+  list.innerHTML = '';
+  participants.forEach(p => {
+    const c = document.createElement('span');
+    c.className = 'chip';
+    c.textContent = p;
+    list.appendChild(c);
+  });
+  document.getElementById('partCount').textContent = participants.length;
+}
+renderChips();
+
+document.getElementById('joinBtn').addEventListener('click', () => {
+  const input = document.getElementById('pseudoInput');
+  const val = input.value.trim();
+  if(!val) return;
+  if(participants.includes(val)){
+    document.getElementById('resultBanner').textContent = 'Tu es déjà inscrit avec ce pseudo !';
+    return;
+  }
+  participants.push(val);
+  LS.set('wheel_participants', participants);
+  input.value = '';
+  renderChips();
+});
+
+/* ---------- Winners list ---------- */
+function renderWinners(){
+  const ul = document.getElementById('winnersList');
+  ul.innerHTML = '';
+  if(winners.length === 0){
+    ul.innerHTML = '<li style="color:#8d87b0; font-style:italic;">Aucun tirage effectué pour l\'instant.</li>';
+    return;
+  }
+  winners.forEach(w => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span><strong>${escapeHtml(w.pseudo)}</strong> — ${escapeHtml(w.pet)} <small style="color:#8d87b0;">(${w.date})</small></span>
+      <span class="status-pill ${w.delivered ? 'status-done' : 'status-pending'}">${w.delivered ? 'Échangé' : 'En attente'}</span>`;
+    ul.appendChild(li);
+  });
+}
+renderWinners();
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ---------- Admin panel ---------- */
+const adminPanel = document.getElementById('adminPanel');
+document.getElementById('adminToggle').addEventListener('click', () => {
+  adminPanel.classList.toggle('open');
+  if(adminPanel.classList.contains('open')){
+    renderPetEditor();
+    renderPending();
+    adminPanel.scrollIntoView({behavior:'smooth'});
+  }
+});
+
+function renderPetEditor(){
+  const wrap = document.getElementById('petEditor');
+  wrap.innerHTML = '';
+  pets.forEach((pet, i) => {
+    const row = document.createElement('div');
+    row.className = 'pet-row';
+    row.innerHTML = `
+      <input type="text" value="${escapeHtml(pet.name)}" data-idx="${i}" data-field="name">
+      <input type="color" value="${pet.color}" data-idx="${i}" data-field="color">
+      <button data-remove="${i}">✕</button>
+    `;
+    wrap.appendChild(row);
+  });
+
+  wrap.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const idx = +e.target.dataset.idx;
+      const field = e.target.dataset.field;
+      pets[idx][field] = e.target.value;
+      LS.set('wheel_pets', pets);
+      drawWheel();
+    });
+  });
+  wrap.querySelectorAll('button[data-remove]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = +e.target.dataset.remove;
+      pets.splice(idx,1);
+      LS.set('wheel_pets', pets);
+      renderPetEditor();
+      drawWheel();
+    });
+  });
+}
+
+document.getElementById('addPetBtn').addEventListener('click', () => {
+  pets.push({ name: 'Nouveau pet', color: '#cccccc' });
+  LS.set('wheel_pets', pets);
+  renderPetEditor();
+  drawWheel();
+});
+
+document.getElementById('resetTimerBtn').addEventListener('click', () => {
+  const hours = parseFloat(document.getElementById('hoursInput').value) || 12;
+  deadline = Date.now() + hours*3600*1000;
+  LS.set('wheel_deadline', deadline);
+  tick();
+});
+
+document.getElementById('clearEntriesBtn').addEventListener('click', () => {
+  if(!confirm('Vider la liste des participants actuels ?')) return;
+  participants = [];
+  LS.set('wheel_participants', participants);
+  renderChips();
+});
+
+document.getElementById('clearWinnersBtn').addEventListener('click', () => {
+  if(!confirm('Effacer tout l\'historique des gagnants ?')) return;
+  winners = [];
+  LS.set('wheel_winners', winners);
+  renderWinners();
+  renderPending();
+});
+
+function renderPending(){
+  const wrap = document.getElementById('pendingList');
+  wrap.innerHTML = '';
+  const pending = winners.filter(w => !w.delivered);
+  if(pending.length === 0){
+    wrap.innerHTML = '<em style="color:#8d87b0;">Aucun échange en attente.</em>';
+    return;
+  }
+  pending.forEach((w) => {
+    const realIdx = winners.indexOf(w);
+    const row = document.createElement('div');
+    row.style.marginBottom = '6px';
+    row.innerHTML = `${escapeHtml(w.pseudo)} — ${escapeHtml(w.pet)} <button data-deliver="${realIdx}" style="margin-left:6px; cursor:pointer; border:2px solid var(--ink); border-radius:8px; background:var(--mint); font-weight:700;">✓ Livré</button>`;
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('button[data-deliver]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = +e.target.dataset.deliver;
+      winners[idx].delivered = true;
+      LS.set('wheel_winners', winners);
+      renderWinners();
+      renderPending();
+    });
+  });
+}
+</script>
+
+</body>
+</html>
